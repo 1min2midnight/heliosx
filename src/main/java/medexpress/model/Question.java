@@ -28,7 +28,7 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("question-answer")
-    private List<PossibleAnswer> possibleAnswer = new ArrayList<>();
+    private List<PossibleAnswer> possibleAnswers = new ArrayList<>();
 
     public Question() {
 
@@ -71,11 +71,11 @@ public class Question {
         this.questionnaire = questionnaire;
     }
 
-    public List<PossibleAnswer> getPossibleAnswer() {
-        return possibleAnswer;
+    public List<PossibleAnswer> getPossibleAnswers() {
+        return possibleAnswers;
     }
 
-    public void setPossibleAnswer(List<PossibleAnswer> possibleAnswer) {
-        this.possibleAnswer = possibleAnswer;
+    public void setPossibleAnswers(List<PossibleAnswer> possibleAnswers) {
+        this.possibleAnswers = possibleAnswers;
     }
 }
