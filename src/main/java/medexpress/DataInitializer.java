@@ -4,6 +4,7 @@ import medexpress.model.PossibleAnswer;
 import medexpress.model.Question;
 import medexpress.model.QuestionType;
 import medexpress.model.Questionnaire;
+import medexpress.repository.PossibleAnswerRepository;
 import medexpress.repository.QuestionnaireRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -12,58 +13,49 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     private final QuestionnaireRepository questionnaireRepository;
+    private final PossibleAnswerRepository possibleAnswerRepository;
 
-    public DataInitializer(QuestionnaireRepository questionnaireRepository) {
+    public DataInitializer(QuestionnaireRepository questionnaireRepository,
+                           PossibleAnswerRepository possibleAnswerRepository) {
         this.questionnaireRepository = questionnaireRepository;
+        this.possibleAnswerRepository = possibleAnswerRepository;
     }
 
     @Override
     public void run(String... args) {
         if (questionnaireRepository.findByCode("initial_consultation").isEmpty()) {
-        Questionnaire questionnaire = new Questionnaire("initial_consultation", "Initial Consultation");
+            // Create and save shared Yes/No answers FIRST
+            PossibleAnswer answerYes = possibleAnswerRepository.save(new PossibleAnswer("Yes"));
+            PossibleAnswer answerNo = possibleAnswerRepository.save(new PossibleAnswer("No"));
 
-        Question q1 = new Question(QuestionType.BOOLEAN, "Are you experiencing severe pain or discomfort?");
-        q1.setQuestionnaire(questionnaire);
-        PossibleAnswer q1a1 = new PossibleAnswer("Yes");
-        q1a1.setQuestion(q1);
-        PossibleAnswer q1a2 = new PossibleAnswer("No");
-        q1a2.setQuestion(q1);
-        q1.getPossibleAnswers().add(q1a1);
-        q1.getPossibleAnswers().add(q1a2);
+            Questionnaire questionnaire = new Questionnaire("initial_consultation", "Initial Consultation");
 
-        Question q2 = new Question(QuestionType.BOOLEAN, "Have your symptoms persisted for more than one week?");
-        q2.setQuestionnaire(questionnaire);
-        PossibleAnswer q2a1 = new PossibleAnswer("Yes");
-        q2a1.setQuestion(q2);
-        PossibleAnswer q2a2 = new PossibleAnswer("No");
-        q2a2.setQuestion(q2);
-        q2.getPossibleAnswers().add(q2a1);
-        q2.getPossibleAnswers().add(q2a2);
+            Question q1 = new Question(QuestionType.BOOLEAN, "Are you experiencing severe pain or discomfort?");
+            q1.setQuestionnaire(questionnaire);
+            q1.getPossibleAnswers().add(answerYes);
+            q1.getPossibleAnswers().add(answerNo);
 
-        Question q4 = new Question(QuestionType.BOOLEAN, "Are you experiencing fever, bleeding, or difficulty breathing?");
-        q4.setQuestionnaire(questionnaire);
-        PossibleAnswer q4a1 = new PossibleAnswer("Yes");
-        q4a1.setQuestion(q4);
-        PossibleAnswer q4a2 = new PossibleAnswer("No");
-        q4a2.setQuestion(q4);
-        q4.getPossibleAnswers().add(q4a1);
-        q4.getPossibleAnswers().add(q4a2);
+            Question q2 = new Question(QuestionType.BOOLEAN, "Have your symptoms persisted for more than one week?");
+            q2.setQuestionnaire(questionnaire);
+            q2.getPossibleAnswers().add(answerYes);
+            q2.getPossibleAnswers().add(answerNo);
 
-        Question q5 = new Question(QuestionType.BOOLEAN, "Have you tried over-the-counter treatments without relief?");
-        q5.setQuestionnaire(questionnaire);
-        PossibleAnswer q5a1 = new PossibleAnswer("Yes");
-        q5a1.setQuestion(q5);
-        PossibleAnswer q5a2 = new PossibleAnswer("No");
-        q5a2.setQuestion(q5);
-        q5.getPossibleAnswers().add(q5a1);
-        q5.getPossibleAnswers().add(q5a2);
+            Question q3 = new Question(QuestionType.BOOLEAN, "Are you experiencing fever, bleeding, or difficulty breathing?");
+            q3.setQuestionnaire(questionnaire);
+            q3.getPossibleAnswers().add(answerYes);
+            q3.getPossibleAnswers().add(answerNo);
 
-        questionnaire.getQuestions().add(q1);
-        questionnaire.getQuestions().add(q2);
-        questionnaire.getQuestions().add(q4);
-        questionnaire.getQuestions().add(q5);
+            Question q4 = new Question(QuestionType.BOOLEAN, "Have you tried over-the-counter treatments without relief?");
+            q4.setQuestionnaire(questionnaire);
+            q4.getPossibleAnswers().add(answerYes);
+            q4.getPossibleAnswers().add(answerNo);
 
-        questionnaireRepository.save(questionnaire);
+            questionnaire.getQuestions().add(q1);
+            questionnaire.getQuestions().add(q2);
+            questionnaire.getQuestions().add(q3);
+            questionnaire.getQuestions().add(q4);
+
+            questionnaireRepository.save(questionnaire);
         }
     }
 }

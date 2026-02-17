@@ -26,8 +26,12 @@ public class Question {
     @JsonBackReference("questionnaire-question")
     private Questionnaire questionnaire;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("question-answer")
+    @ManyToMany(cascade = CascadeType.MERGE)
+    @JoinTable(
+        name = "question_possible_answers",
+        joinColumns = @JoinColumn(name = "question_id"),
+        inverseJoinColumns = @JoinColumn(name = "answer_id")
+    )
     private List<PossibleAnswer> possibleAnswers = new ArrayList<>();
 
     public Question() {
